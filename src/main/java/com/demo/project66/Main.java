@@ -14,8 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,17 +27,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-public class Application {
-
-    @Autowired
-    MyService myService;
+public class Main {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(Main.class, args);
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+    public CommandLineRunner commandLineRunner(MyService myService) {
         return args -> {
             myService.seedData();
             myService.getData();
@@ -75,21 +71,22 @@ class PostComment {
 
 interface PostRepository extends CrudRepository<Post, Long> {
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments")
-    List<Post> findAllApproach1();
+    List<Post> findAllFixed();
 
     @EntityGraph(attributePaths = {"comments"})
     List<Post> findAll();
 }
 
 @Component
+@RequiredArgsConstructor
 class MyService {
-    @Autowired
+
     PostRepository postRepository;
 
     @Transactional
     public void getData() {
         Iterable<Post> all = postRepository.findAll();
-//        Iterable<Post> all = postRepository.findAllApproach1();
+       //Iterable<Post> all = postRepository.findAllFixed();
         for (Post post : all) {
             System.out.println(post.getTitle());
             List<PostComment> comments = post.getComments();
