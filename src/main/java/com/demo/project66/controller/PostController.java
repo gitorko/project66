@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
-public class HomeController {
+public class PostController {
 
     final PostService postService;
 
@@ -46,5 +46,4 @@ public class HomeController {
     public Iterable<Post4> getAllPostsGraph() {
         return postService.getAllPostsGraph();
     }
-
 }
